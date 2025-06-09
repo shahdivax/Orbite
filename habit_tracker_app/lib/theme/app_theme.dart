@@ -18,117 +18,180 @@ class AppTheme {
   //              weight: 700
   // For simplicity, this example will proceed without custom fonts initially.
 
-  static final Color _darkPrimaryColor = Colors.blueGrey.shade900; // Example primary
-  static final Color _darkAccentColor = Colors.tealAccent.shade400; // Example accent
-  static final Color _darkBackgroundColor = Color(0xFF121212); // Common dark theme background
-  static final Color _darkCardColor = Color(0xFF1E1E1E); // Slightly lighter than background
+  // Fluorescent colors for habits
+  static const List<Color> fluorescentColors = [
+    Color(0xFF00FF41), // Bright green
+    Color(0xFF00D4FF), // Bright cyan
+    Color(0xFFFF0080), // Bright pink
+    Color(0xFFFFFF00), // Bright yellow
+    Color(0xFFFF4000), // Bright orange
+    Color(0xFF8000FF), // Bright purple
+    Color(0xFF00FF80), // Bright mint
+    Color(0xFFFF0040), // Bright red
+    Color(0xFF4000FF), // Bright blue
+    Color(0xFF80FF00), // Bright lime
+  ];
+
+  static final Color _darkPrimaryColor = Color(0xFF1A1A1A); // Darker background
+  static final Color _darkAccentColor = Color(0xFF00FF41); // Bright green accent
+  static final Color _darkBackgroundColor = Color(0xFF0F0F0F); // Very dark background
+  static final Color _darkCardColor = Color(0xFF1E1E1E); // Card background
+  static final Color _darkSurfaceColor = Color(0xFF2A2A2A); // Surface color
 
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primaryColor: _darkPrimaryColor,
     scaffoldBackgroundColor: _darkBackgroundColor,
-    // accentColor: _darkAccentColor, // accentColor is deprecated, use colorScheme.secondary
     colorScheme: ColorScheme.dark(
-      primary: _darkPrimaryColor,
+      primary: _darkAccentColor,
       secondary: _darkAccentColor,
-      surface: _darkCardColor, // Use for cards, dialogs etc.
+      surface: _darkCardColor,
       background: _darkBackgroundColor,
-      onPrimary: Colors.white,
+      onPrimary: Colors.black,
       onSecondary: Colors.black,
-      onSurface: Colors.white,
-      onBackground: Colors.white,
-      error: Colors.redAccent,
-      onError: Colors.black,
+      onSurface: Colors.white, // Ensure text is white on dark surfaces
+      onBackground: Colors.white, // Ensure text is white on dark background
+      error: Color(0xFFFF4444),
+      onError: Colors.white,
     ),
-    cardTheme: CardTheme(
-      elevation: 2.0,
+    cardTheme: CardThemeData(
+      elevation: 8.0,
       color: _darkCardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(16.0),
       ),
     ),
     appBarTheme: AppBarTheme(
-      color: _darkCardColor, // Or _darkPrimaryColor
-      elevation: 1.0,
-      iconTheme: IconThemeData(color: _darkAccentColor),
+      backgroundColor: _darkBackgroundColor,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
-        // fontFamily: 'Poppins', // Uncomment if using custom font
-        fontSize: 20,
-        fontWeight: FontWeight.w500,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: _darkAccentColor,
       foregroundColor: Colors.black,
+      elevation: 8.0,
     ),
     buttonTheme: ButtonThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       buttonColor: _darkAccentColor,
       textTheme: ButtonTextTheme.primary,
     ),
-    elevatedButtonTheme: ElevatedButton.styleFrom(
-      backgroundColor: _darkAccentColor,
-      foregroundColor: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _darkAccentColor,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        elevation: 4.0,
+        textStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
+      ),
     ),
-    textButtonTheme: TextButton.styleFrom(
-      foregroundColor: _darkAccentColor,
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: _darkAccentColor,
+        textStyle: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: _darkCardColor, // Or a slightly different shade
-      hintStyle: TextStyle(color: Colors.grey.shade500),
+      fillColor: _darkSurfaceColor,
+      hintStyle: TextStyle(color: Colors.grey.shade400),
+      labelStyle: TextStyle(color: Colors.white), // Ensure labels are visible
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(12.0),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide(color: Colors.grey.shade700, width: 0.5),
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: Colors.grey.shade600, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        borderSide: BorderSide(color: _darkAccentColor, width: 1.5),
+        borderRadius: BorderRadius.circular(12.0),
+        borderSide: BorderSide(color: _darkAccentColor, width: 2),
       ),
-      contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 12.0),
+      contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
     ),
-    dialogTheme: DialogTheme(
-      backgroundColor: _darkBackgroundColor,
+    dialogTheme: DialogThemeData(
+      backgroundColor: _darkCardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+      titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+      ),
+    ),
+    textTheme: TextTheme(
+      displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+      displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+      headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Colors.white),
+      headlineMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+      titleLarge: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+      titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+      titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
+      bodySmall: TextStyle(fontSize: 12, color: Colors.white70),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
+      labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
+      labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.white70),
+    ),
+    iconTheme: IconThemeData(
+      color: Colors.white,
+    ),
+    dividerColor: Colors.grey.shade700,
+    listTileTheme: ListTileThemeData(
+      textColor: Colors.white,
+      iconColor: Colors.white,
+    ),
+  );
+
+  // Light theme with better contrast
+  static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primarySwatch: Colors.blue,
+    colorScheme: ColorScheme.light(
+      primary: Colors.blue.shade600,
+      secondary: Colors.blue.shade400,
+      surface: Colors.white,
+      background: Colors.grey.shade50,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onSurface: Colors.black87,
+      onBackground: Colors.black87,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 4.0,
+      color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
       ),
     ),
-    // fontFamily: 'Poppins', // Set default font family if using one
-    textTheme: TextTheme( // Define default text styles
-        displayLarge: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-        titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white70),
-        bodyMedium: TextStyle(fontSize: 14, color: Colors.white),
-    ).apply(
-        // fontFamily: 'Poppins', // Apply font family to all text styles
-        bodyColor: Colors.white,
-        displayColor: Colors.white,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Colors.black87),
+      titleTextStyle: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
     ),
-    iconTheme: IconThemeData(
-      color: _darkAccentColor,
-    ),
-    dividerColor: Colors.grey.shade800,
-    // Add other theme properties as needed (e.g., textSelectionTheme)
-  );
-
-  // Define a light theme for completeness, can be expanded later
-  static final ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
-    primarySwatch: Colors.blue, // Example, customize as needed
-    // accentColor: Colors.amber, // Deprecated
-    colorScheme: ColorScheme.light(
-      primary: Colors.blue,
-      secondary: Colors.amber,
-      // ... other light theme colors
-    ),
-    // fontFamily: 'Poppins',
-    // Define other light theme properties if needed
-    // For now, it's a very basic light theme
   );
 }

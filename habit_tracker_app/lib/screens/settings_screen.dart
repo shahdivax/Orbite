@@ -175,7 +175,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           ListTile(
             title: const Text('Import Data'),
-            leading: const Icon(Icons.download_file),
+            leading: const Icon(Icons.download),
             onTap: () => _importData(context, ref),
           ),
           const Divider(),

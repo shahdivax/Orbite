@@ -14,3 +14,5 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+set PATH=%PATH%;D:\Python_AI_projects_Storage\Orbite\flutter\bin;C:\Windows\System32\WindowsPowerShell\v1.0
