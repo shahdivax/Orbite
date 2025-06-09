@@ -40,7 +40,7 @@ class AppTheme {
       error: Colors.redAccent,
       onError: Colors.black,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 2.0,
       color: _darkCardColor,
       shape: RoundedRectangleBorder(
@@ -67,14 +67,18 @@ class AppTheme {
       buttonColor: _darkAccentColor,
       textTheme: ButtonTextTheme.primary,
     ),
-    elevatedButtonTheme: ElevatedButton.styleFrom(
-      backgroundColor: _darkAccentColor,
-      foregroundColor: Colors.black,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _darkAccentColor,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
     ),
-    textButtonTheme: TextButton.styleFrom(
-      foregroundColor: _darkAccentColor,
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: _darkAccentColor,
+      ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -94,7 +98,7 @@ class AppTheme {
       ),
       contentPadding: EdgeInsets.symmetric(vertical: 14.0, horizontal: 12.0),
     ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       backgroundColor: _darkBackgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
