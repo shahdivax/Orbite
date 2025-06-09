@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart'; // Assuming uuid will be added or handled
+import 'package:uuid/uuid.dart';
 
-part 'habit.g.dart'; // Hive generator will create this
+part 'habit.g.dart';
 
 @HiveType(typeId: 0)
 class Habit extends Equatable {
@@ -13,16 +13,16 @@ class Habit extends Equatable {
   final String name;
 
   @HiveField(2)
-  final String? iconEmoji; // Optional
+  final String? iconEmoji;
 
   @HiveField(3)
-  final int colorThemeValue; // Store color as int
+  final int colorThemeValue;
 
   @HiveField(4)
   final FrequencyType frequencyType;
 
   @HiveField(5)
-  final Map<String, bool>? customFrequency; // e.g., {'Mon': true, 'Tue': false}
+  final Map<String, bool>? customFrequency;
 
   @HiveField(6)
   final DateTime startDate;
@@ -39,10 +39,9 @@ class Habit extends Equatable {
     this.customFrequency,
     required this.startDate,
     List<DateTime>? completedDates,
-  })  : this.id = id ?? Uuid().v4(), // Generate ID if not provided
+  })  : this.id = id ?? Uuid().v4(),
         this.completedDates = completedDates ?? [];
 
-  //copyWith method for immutability
   Habit copyWith({
     String? id,
     String? name,
@@ -52,7 +51,7 @@ class Habit extends Equatable {
     Map<String, bool>? customFrequency,
     DateTime? startDate,
     List<DateTime>? completedDates,
-    bool? markEmojiAsNull, // To explicitly set iconEmoji to null
+    bool? markEmojiAsNull,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -77,16 +76,44 @@ class Habit extends Equatable {
         startDate,
         completedDates,
       ];
+
+  // --- JSON Serialization ---
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'iconEmoji': iconEmoji,
+      'colorThemeValue': colorThemeValue,
+      'frequencyType': frequencyType.index, // Store enum as index
+      'customFrequency': customFrequency,
+      'startDate': startDate.toIso8601String(), // Store date as ISO string
+      'completedDates': completedDates.map((date) => date.toIso8601String()).toList(),
+    };
+  }
+
+  factory Habit.fromJson(Map<String, dynamic> json) {
+    return Habit(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      iconEmoji: json['iconEmoji'] as String?,
+      colorThemeValue: json['colorThemeValue'] as int,
+      frequencyType: FrequencyType.values[json['frequencyType'] as int],
+      customFrequency: (json['customFrequency'] as Map<String, dynamic>?)
+          ?.map((key, value) => MapEntry(key, value as bool)),
+      startDate: DateTime.parse(json['startDate'] as String),
+      completedDates: (json['completedDates'] as List<dynamic>)
+          .map((dateString) => DateTime.parse(dateString as String))
+          .toList(),
+    );
+  }
 }
 
 @HiveType(typeId: 1)
 enum FrequencyType {
   @HiveField(0)
   daily,
-
   @HiveField(1)
   weekly,
-
   @HiveField(2)
   custom,
 }

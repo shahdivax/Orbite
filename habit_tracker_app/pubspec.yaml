@@ -36,11 +36,11 @@ dependencies:
   path_provider:
   intl:
   flutter_colorpicker:
-  flutter_launcher_icons:
-  flutter_native_splash:
   equatable:
   uuid: ^4.3.3
   collection: ^1.18.0
+  file_picker: ^6.2.0
+  share_plus: ^9.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -58,6 +58,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,9 +73,10 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+    - assets/app_icon/ # To make image_path valid for generators
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -100,3 +103,36 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/app_icon/icon.png" # User needs to create this path and add icon.png
+  min_sdk_android: 21 # Optional
+  remove_alpha_ios: true # Optional
+  # web:
+  #   generate: true
+  #   image_path: "path/to/image.png"
+  #   background_color: "#hexcode"
+  #   theme_color: "#hexcode"
+  # windows:
+  #   generate: true
+  #   image_path: "path/to/image.png"
+  #   icon_size: 48 # Optional
+  # macos:
+  #   generate: true
+  #   image_path: "path/to/image.png"
+
+flutter_native_splash:
+  color: "#121212" # Dark background color matching our dark theme
+  # image: assets/app_icon/splash_icon.png # Optional: User can add a splash image
+  color_dark: "#121212"
+  # image_dark: assets/app_icon/splash_icon_dark.png # Optional for dark theme specific image
+
+  android_12: # Specifics for Android 12+
+    # image: assets/app_icon/android12_splash.png
+    # icon_background_color: "#121212"
+    # image_dark: assets/app_icon/android12_splash_dark.png
+    # icon_background_color_dark: "#121212"
+    color: "#121212" # Ensure this matches the main color for consistency
+    color_dark: "#121212"
