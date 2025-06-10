@@ -157,7 +157,7 @@ class _AddEditHabitScreenState extends ConsumerState<AddEditHabitScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
+              SizedBox(
                 height: 120,
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

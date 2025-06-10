@@ -15,6 +15,6 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-set PATH=%PATH%;D:\Python_AI_projects_Storage\Orbite\flutter\bin;C:\Windows\System32\WindowsPowerShell\v1.0
+set PATH=%PATH%;D:\flutter\flutter\bin;C:\Windows\System32\WindowsPowerShell\v1.0
 set PATH=C:\Program Files\CMake\bin;%PATH%
-set PATH="C:\Users\lenovo\AppData\Local\Microsoft\WinGet\Links\ninja.exe";%PATH%
+set PATH="C:\Users\lenovo\AppData\Local\Microsoft\WinGet\Links\";%PATH%

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:habit_tracker_app/models/habit.dart';
 import 'package:intl/intl.dart';
 
-class ContributionGrid extends StatelessWidget {
+class ContributionGrid extends StatefulWidget {
   final Habit habit;
   final Color habitColor;
   final bool isInteractive;
   final Function(DateTime)? onDateTap;
-  final int weeksToShow;
 
   const ContributionGrid({
     super.key,
@@ -15,82 +14,54 @@ class ContributionGrid extends StatelessWidget {
     required this.habitColor,
     this.isInteractive = false,
     this.onDateTap,
-    this.weeksToShow = 53, // Full year
   });
 
-  // Generate the grid data for a relevant time period
-  List<List<DateTime>> _generateGridData() {
+  @override
+  State<ContributionGrid> createState() => _ContributionGridState();
+}
+
+class _ContributionGridState extends State<ContributionGrid> {
+  late DateTime currentMonth;
+
+  @override
+  void initState() {
+    super.initState();
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final habitStartDate = DateTime(habit.startDate.year, habit.startDate.month, habit.startDate.day);
+    currentMonth = DateTime(now.year, now.month, 1);
+  }
+
+  // Generate horizontal weekly strips for the month
+  List<List<DateTime?>> _generateHorizontalWeeks() {
+    final firstDayOfMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+    final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0);
     
-    // Start the grid from the habit start date (or a bit before for context)
-    // Find the Monday of the week containing the habit start date
-    final daysFromMonday = (habitStartDate.weekday - 1) % 7;
-    final firstMonday = habitStartDate.subtract(Duration(days: daysFromMonday));
+    // Find the first Monday to start the week
+    final firstMonday = firstDayOfMonth.subtract(Duration(days: (firstDayOfMonth.weekday - 1) % 7));
     
-    // Show weeks from habit start forward (full year view)
-    List<List<DateTime>> weeks = [];
+    List<List<DateTime?>> weeks = [];
     
-    for (int week = 0; week < weeksToShow; week++) {
-      List<DateTime> weekDays = [];
+    for (int week = 0; week < 6; week++) {
+      List<DateTime?> weekDays = [];
       for (int day = 0; day < 7; day++) {
         final currentDate = firstMonday.add(Duration(days: (week * 7) + day));
+        
+        // Include all days for visual continuity
         weekDays.add(currentDate);
       }
       weeks.add(weekDays);
+      
+      // Stop if we've covered the month
+      if (weekDays.any((date) => date != null && date.month == currentMonth.month + 1)) {
+        break;
+      }
     }
     
     return weeks;
   }
 
-  // Generate month labels that match the actual grid data
-  List<Map<String, dynamic>> _generateMonthLabels() {
-    final gridData = _generateGridData();
-    if (gridData.isEmpty) return [];
-    
-    List<Map<String, dynamic>> monthLabels = [];
-    String? lastMonth;
-    
-    // Track months across the grid
-    for (int week = 0; week < gridData.length; week++) {
-      // Check if this week contains the first day of a new month or is the first week
-      for (int day = 0; day < 7; day++) {
-        final date = gridData[week][day];
-        final monthName = DateFormat('MMM').format(date);
-        
-        // Add label if it's a new month or the first week
-        if (week == 0 && day == 0) {
-          // Always add label for first week
-          monthLabels.add({
-            'month': monthName,
-            'weekIndex': week,
-            'date': date,
-          });
-          lastMonth = monthName;
-          break;
-        } else if (date.day == 1 && monthName != lastMonth) {
-          // Add label for new month
-          monthLabels.add({
-            'month': monthName,
-            'weekIndex': week,
-            'date': date,
-          });
-          lastMonth = monthName;
-          break;
-        }
-      }
-    }
-    
-    return monthLabels;
-  }
-
-  // Check if a date is completed
   bool _isDateCompleted(DateTime date) {
     final dateToCheck = DateTime(date.year, date.month, date.day);
-    
-    // Use direct comparison instead of isAtSameMomentAs
-    return habit.completedDates.any((completedDate) {
+    return widget.habit.completedDates.any((completedDate) {
       final completed = DateTime(completedDate.year, completedDate.month, completedDate.day);
       return completed.year == dateToCheck.year &&
              completed.month == dateToCheck.month &&
@@ -98,316 +69,307 @@ class ContributionGrid extends StatelessWidget {
     });
   }
 
-  // Get intensity level (0-4) based on completion
-  int _getIntensityLevel(DateTime date) {
-    return _isDateCompleted(date) ? 4 : 0;
-  }
-
-  // Get color based on intensity level
-  Color _getSquareColor(int intensity, DateTime date) {
+  Color _getSquareColor(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final checkDate = DateTime(date.year, date.month, date.day);
-    final habitStartDate = DateTime(habit.startDate.year, habit.startDate.month, habit.startDate.day);
+    final habitStartDate = DateTime(widget.habit.startDate.year, widget.habit.startDate.month, widget.habit.startDate.day);
     
-    // Don't show future dates
-    if (checkDate.isAfter(today)) {
-      return Colors.grey.shade800.withValues(alpha: 0.3);
-    }
+    final isCompleted = _isDateCompleted(date);
+    final isFuture = checkDate.isAfter(today);
+    final isBeforeHabitStart = checkDate.isBefore(habitStartDate);
+    final isCurrentMonth = date.month == currentMonth.month;
     
-    // Don't show dates before habit started
-    if (checkDate.isBefore(habitStartDate)) {
-      return Colors.grey.shade900.withValues(alpha: 0.2);
+    if (isBeforeHabitStart) {
+      return Color.lerp(widget.habitColor, Colors.black, 0.85)!;
+    } else if (isFuture) {
+      return Color.lerp(widget.habitColor, Colors.white, 0.85)!;
+    } else if (!isCurrentMonth) {
+      return Color.lerp(widget.habitColor, Colors.black, 0.7)!;
+    } else if (isCompleted) {
+      return widget.habitColor;
+    } else {
+      return Color.lerp(widget.habitColor, Colors.black, 0.5)!;
     }
-    
-    // Make completed dates MUCH more visible with brighter colors
-    switch (intensity) {
-      case 0:
-        return Colors.grey.shade700; // Empty days - slightly lighter
-      case 1:
-        return habitColor.withValues(alpha: 0.7);
-      case 2:
-        return habitColor.withValues(alpha: 0.85);
-      case 3:
-        return habitColor;
-      case 4:
-        // Use the full habit color with high visibility
-        return habitColor;
-      default:
-        return Colors.grey.shade700;
-    }
+  }
+
+  void _navigateMonth(bool forward) {
+    setState(() {
+      if (forward) {
+        currentMonth = DateTime(currentMonth.year, currentMonth.month + 1, 1);
+      } else {
+        currentMonth = DateTime(currentMonth.year, currentMonth.month - 1, 1);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final gridData = _generateGridData();
-    final monthLabels = _generateMonthLabels();
-    final squareSize = isInteractive ? 16.0 : 12.0;
-    final spacing = isInteractive ? 3.0 : 2.0;
+    final gridData = _generateHorizontalWeeks();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompact = !widget.isInteractive;
+    
+    // Increased sizes for better visibility and cooler look
+    final squareSize = isCompact ? 12.0 : 18.0; // Increased from 8/14
+    final spacing = isCompact ? 3.0 : 4.0; // Increased spacing
+    final headerHeight = isCompact ? 50.0 : 70.0; // Increased header
 
     return Container(
-      padding: EdgeInsets.all(isInteractive ? 16 : 8),
+      width: double.infinity,
+      padding: EdgeInsets.all(isCompact ? 12 : 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Month labels - aligned with actual grid data
+          // Clean Month Header (no boxes)
           Container(
-            height: 16,
-            margin: EdgeInsets.only(left: isInteractive ? 20 : 0, bottom: 6),
+            height: headerHeight,
             child: Row(
               children: [
-                // Add space for day labels if interactive
-                if (isInteractive) SizedBox(width: 20),
+                // Previous button - cleaner style
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _navigateMonth(false),
+                    child: Container(
+                      width: isCompact ? 36 : 44,
+                      height: isCompact ? 36 : 44,
+                      decoration: BoxDecoration(
+                        color: widget.habitColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.chevron_left,
+                        color: widget.habitColor,
+                        size: isCompact ? 20 : 24,
+                      ),
+                    ),
+                  ),
+                ),
+                
+                // Month and Year - cleaner typography
                 Expanded(
-                  child: Stack(
-                    children: monthLabels.map((monthData) {
-                      final weekIndex = monthData['weekIndex'] as int;
-                      final monthName = monthData['month'] as String;
-                      final leftPosition = weekIndex * (squareSize + spacing);
-                      
-                      return Positioned(
-                        left: leftPosition,
-                        child: Text(
-                          monthName,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat('MMMM').format(currentMonth),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: isCompact ? 20 : 26,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      if (!isCompact) ...[
+                        SizedBox(height: 4),
+                        Text(
+                          DateFormat('yyyy').format(currentMonth),
                           style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: isInteractive ? 10 : 8,
-                            fontWeight: FontWeight.w500,
+                            color: widget.habitColor.withOpacity(0.8),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
                           ),
                         ),
-                      );
-                    }).toList(),
+                      ],
+                    ],
+                  ),
+                ),
+                
+                // Next button - cleaner style
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => _navigateMonth(true),
+                    child: Container(
+                      width: isCompact ? 36 : 44,
+                      height: isCompact ? 36 : 44,
+                      decoration: BoxDecoration(
+                        color: widget.habitColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.chevron_right,
+                        color: widget.habitColor,
+                        size: isCompact ? 20 : 24,
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Day labels (only in interactive mode)
-              if (isInteractive)
-                Container(
-                  width: 20,
-                  child: Column(
-                    children: [
-                      // Monday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'M',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+          SizedBox(height: isCompact ? 16 : 24),
+          
+          // Day Labels - better spacing
+          if (widget.isInteractive) ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: isCompact ? 12 : 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => 
+                  SizedBox(
+                    width: squareSize * 1.1,
+                    child: Text(
+                      day,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: isCompact ? 10 : 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.8,
                       ),
-                      SizedBox(height: spacing),
-                      // Tuesday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'T',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing),
-                      // Wednesday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'W',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing),
-                      // Thursday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'T',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing),
-                      // Friday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'F',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing),
-                      // Saturday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'S',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: spacing),
-                      // Sunday
-                      Container(
-                        height: squareSize,
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'S',
-                          style: TextStyle(
-                            color: Colors.grey.shade400,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              
-              // Grid
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                ).toList(),
+              ),
+            ),
+            SizedBox(height: 16),
+          ],
+          
+          // Premium Grid Layout - bigger and cooler
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: isCompact ? 12 : 20),
+            child: Column(
+              children: gridData.map((week) {
+                return Container(
+                  margin: EdgeInsets.only(bottom: spacing),
                   child: Row(
-                    children: gridData.map((week) {
-                      return Container(
-                        margin: EdgeInsets.only(right: spacing),
-                        child: Column(
-                          children: week.map((date) {
-                            final intensity = _getIntensityLevel(date);
-                            final squareColor = _getSquareColor(intensity, date);
-                            final now = DateTime.now();
-                            final today = DateTime(now.year, now.month, now.day);
-                            final checkDate = DateTime(date.year, date.month, date.day);
-                            final habitStartDate = DateTime(habit.startDate.year, habit.startDate.month, habit.startDate.day);
-                            
-                            final isToday = checkDate.isAtSameMomentAs(today);
-                            final isFuture = checkDate.isAfter(today);
-                            final isBeforeHabitStart = checkDate.isBefore(habitStartDate);
-                            final isCompleted = _isDateCompleted(date);
-                            
-                            // Can only tap if it's interactive, not future, not before start, and has onDateTap
-                            final canTap = isInteractive && 
-                                          onDateTap != null && 
-                                          !isFuture && 
-                                          !isBeforeHabitStart;
-                            
-                            String tooltipMessage;
-                            if (isFuture) {
-                              tooltipMessage = '${DateFormat('MMM d, y').format(date)}\nFuture date';
-                            } else if (isBeforeHabitStart) {
-                              tooltipMessage = '${DateFormat('MMM d, y').format(date)}\nBefore habit started';
-                            } else {
-                              tooltipMessage = '${DateFormat('MMM d, y').format(date)}\n${isCompleted ? "Completed" : "Not completed"}';
-                            }
-                            
-                            return Container(
-                              margin: EdgeInsets.only(bottom: spacing),
-                              child: Tooltip(
-                                message: tooltipMessage,
-                                child: GestureDetector(
-                                  onTap: canTap ? () => onDateTap!(date) : null,
-                                  child: Container(
-                                    width: squareSize,
-                                    height: squareSize,
-                                    decoration: BoxDecoration(
-                                      color: squareColor,
-                                      borderRadius: BorderRadius.circular(2),
-                                      border: isToday
-                                          ? Border.all(color: Colors.white, width: 1.5)
-                                          : isCompleted
-                                              ? Border.all(color: habitColor.withValues(alpha: 0.8), width: 1)
-                                              : null,
-                                    ),
-                                    // Add a more visible indicator for completed dates
-                                    child: isCompleted && intensity > 0
-                                        ? Icon(
-                                            Icons.check,
-                                            size: squareSize * 0.6,
-                                            color: Colors.white,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: week.map((date) {
+                      if (date == null) {
+                        return SizedBox(
+                          width: squareSize,
+                          height: squareSize,
+                        );
+                      }
+                      
+                      final squareColor = _getSquareColor(date);
+                      final now = DateTime.now();
+                      final today = DateTime(now.year, now.month, now.day);
+                      final checkDate = DateTime(date.year, date.month, date.day);
+                      final habitStartDate = DateTime(widget.habit.startDate.year, widget.habit.startDate.month, widget.habit.startDate.day);
+                      
+                      final isToday = checkDate.isAtSameMomentAs(today);
+                      final isFuture = checkDate.isAfter(today);
+                      final isBeforeHabitStart = checkDate.isBefore(habitStartDate);
+                      final isCompleted = _isDateCompleted(date);
+                      
+                      final canTap = widget.isInteractive && 
+                                    widget.onDateTap != null && 
+                                    !isFuture && 
+                                    !isBeforeHabitStart;
+                      
+                      String tooltipMessage;
+                      if (isFuture) {
+                        tooltipMessage = '${DateFormat('MMM d, y').format(date)}\nFuture date';
+                      } else if (isBeforeHabitStart) {
+                        tooltipMessage = '${DateFormat('MMM d, y').format(date)}\nBefore habit started';
+                      } else {
+                        tooltipMessage = '${DateFormat('MMM d, y').format(date)}\n${isCompleted ? "Completed" : "Not completed"}';
+                      }
+                      
+                      return Tooltip(
+                        message: tooltipMessage,
+                        child: GestureDetector(
+                          onTap: canTap ? () => widget.onDateTap!(date) : null,
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 200),
+                            width: squareSize,
+                            height: squareSize,
+                            decoration: BoxDecoration(
+                              color: squareColor,
+                              borderRadius: BorderRadius.circular(squareSize * 0.25), // More rounded
+                              border: isToday
+                                  ? Border.all(
+                                      color: Colors.white,
+                                      width: isCompact ? 2.0 : 3.0, // Thicker border
+                                    )
+                                  : null,
+                              boxShadow: isCompleted && date.month == currentMonth.month
+                                  ? [
+                                      BoxShadow(
+                                        color: widget.habitColor.withOpacity(0.4),
+                                        blurRadius: 8,
+                                        spreadRadius: 2,
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                          ),
                         ),
                       );
                     }).toList(),
                   ),
-                ),
-              ),
-            ],
+                );
+              }).toList(),
+            ),
           ),
           
-          // Legend (only in interactive mode)
-          if (isInteractive)
+          // Premium Legend - cleaner style
+          if (widget.isInteractive) ...[
+            SizedBox(height: 24),
             Container(
-              margin: EdgeInsets.only(top: 16),
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    'Less',
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 11,
-                    ),
+                  _buildPremiumLegendItem(
+                    'Before Start',
+                    Color.lerp(widget.habitColor, Colors.black, 0.85)!,
                   ),
-                  SizedBox(width: 8),
-                  for (int i = 0; i <= 4; i++)
-                    Container(
-                      margin: EdgeInsets.only(right: 3),
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: _getSquareColor(i, DateTime.now()),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  SizedBox(width: 8),
-                  Text(
-                    'More',
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 11,
-                    ),
+                  _buildPremiumLegendItem(
+                    'Missed',
+                    Color.lerp(widget.habitColor, Colors.black, 0.5)!,
+                  ),
+                  _buildPremiumLegendItem(
+                    'Completed',
+                    widget.habitColor,
+                  ),
+                  _buildPremiumLegendItem(
+                    'Future',
+                    Color.lerp(widget.habitColor, Colors.white, 0.85)!,
                   ),
                 ],
               ),
             ),
+          ],
         ],
       ),
+    );
+  }
+  
+  Widget _buildPremiumLegendItem(String label, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 14, // Increased legend square size
+          height: 14,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.4),
+                blurRadius: 4,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey.shade400,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
     );
   }
 } 

@@ -1,5 +1,5 @@
 import 'dart:convert'; // For jsonEncode and jsonDecode
-import 'dart:io'; // For File operations (will need path_provider for path)
+// For File operations (will need path_provider for path)
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habit_tracker_app/models/habit.dart';
 import 'package:path_provider/path_provider.dart'; // For getting documents directory

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habit_tracker_app/models/habit.dart';
-import 'package:habit_tracker_app/screens/add_edit_habit_screen.dart'; // Keep for edit action if needed elsewhere
+// Keep for edit action if needed elsewhere
 import 'package:habit_tracker_app/screens/habit_detail_screen.dart'; // Import HabitDetailScreen
 import 'package:habit_tracker_app/widgets/habit_grid.dart';
 

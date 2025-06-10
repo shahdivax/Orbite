@@ -310,18 +310,30 @@ class _HabitDetailScreenState extends ConsumerState<HabitDetailScreen> {
 
             const SizedBox(height: 16),
 
-            // Interactive Contribution Grid
+            // Premium Interactive Contribution Grid
             Container(
+              padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: habitColor.withOpacity(0.3),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: habitColor.withOpacity(0.1),
+                    blurRadius: 20,
+                    spreadRadius: 0,
+                    offset: Offset(0, 8),
+                  ),
+                ],
               ),
               child: ContributionGrid(
                 habit: habit,
                 habitColor: habitColor,
                 isInteractive: true,
                 onDateTap: _isEditing ? (date) => _toggleDateCompletion(date, habit) : null,
-                weeksToShow: 53,
               ),
             ),
 

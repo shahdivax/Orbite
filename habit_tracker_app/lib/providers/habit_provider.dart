@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:habit_tracker_app/models/habit.dart';
 import 'package:habit_tracker_app/services/hive_service.dart';
+import 'package:habit_tracker_app/services/widget_service.dart';
 import 'package:collection/collection.dart'; // For firstWhereOrNull
 
 // Provider for the HiveService instance
@@ -25,23 +26,26 @@ class HabitNotifier extends StateNotifier<List<Habit>> {
 
   Future<void> addHabit(Habit habit) async {
     await _hiveService.addHabit(habit);
-    // state = [...state, habit]; // Optimistic update
     await loadHabits(); // More robust: reload from source
+    
+    // Update widgets
+    await WidgetService.updateHabitWidget(habit);
   }
 
   Future<void> updateHabit(Habit habit) async {
     await _hiveService.updateHabit(habit);
-    // state = [
-    //   for (final h in state)
-    //     if (h.id == habit.id) habit else h,
-    // ]; // Optimistic update
     await loadHabits();
+    
+    // Update widgets
+    await WidgetService.updateHabitWidget(habit);
   }
 
   Future<void> deleteHabit(String habitId) async {
     await _hiveService.deleteHabit(habitId);
-    // state = state.where((h) => h.id != habitId).toList(); // Optimistic update
     await loadHabits();
+    
+    // Update all remaining widgets
+    await WidgetService.updateAllHabitWidgets(state);
   }
 
   Future<void> toggleHabitCompletion(String habitId, DateTime date) async {
@@ -68,6 +72,9 @@ class HabitNotifier extends StateNotifier<List<Habit>> {
       final updatedHabit = habit.copyWith(completedDates: updatedCompletions);
       await _hiveService.updateHabit(updatedHabit);
       await loadHabits(); // Refresh state from source
+      
+      // Update widget for this specific habit
+      await WidgetService.updateHabitWidget(updatedHabit);
     }
   }
 

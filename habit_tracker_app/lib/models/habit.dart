@@ -39,8 +39,8 @@ class Habit extends Equatable {
     this.customFrequency,
     required this.startDate,
     List<DateTime>? completedDates,
-  })  : this.id = id ?? Uuid().v4(),
-        this.completedDates = completedDates ?? [];
+  })  : id = id ?? Uuid().v4(),
+        completedDates = completedDates ?? [];
 
   Habit copyWith({
     String? id,

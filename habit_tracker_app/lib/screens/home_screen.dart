@@ -330,12 +330,20 @@ class _GitHubStyleHabitCard extends ConsumerWidget {
             
             const SizedBox(height: 16),
             
-            // GitHub-style contribution grid
-            ContributionGrid(
-              habit: habit,
-              habitColor: habitColor,
-              isInteractive: false,
-              weeksToShow: 52, // Show 52 weeks (full year)
+            // Premium GitHub-style contribution grid
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: habitColor.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: ContributionGrid(
+                habit: habit,
+                habitColor: habitColor,
+                isInteractive: false,
+              ),
             ),
             
             // Stats row

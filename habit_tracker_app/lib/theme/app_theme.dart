@@ -46,11 +46,9 @@ class AppTheme {
       primary: _darkAccentColor,
       secondary: _darkAccentColor,
       surface: _darkCardColor,
-      background: _darkBackgroundColor,
       onPrimary: Colors.black,
       onSecondary: Colors.black,
-      onSurface: Colors.white, // Ensure text is white on dark surfaces
-      onBackground: Colors.white, // Ensure text is white on dark background
+      onSurface: Colors.white, // Ensure text is white on dark background
       error: Color(0xFFFF4444),
       onError: Colors.white,
     ),
@@ -170,11 +168,9 @@ class AppTheme {
       primary: Colors.blue.shade600,
       secondary: Colors.blue.shade400,
       surface: Colors.white,
-      background: Colors.grey.shade50,
       onPrimary: Colors.white,
       onSecondary: Colors.white,
       onSurface: Colors.black87,
-      onBackground: Colors.black87,
     ),
     cardTheme: CardThemeData(
       elevation: 4.0,

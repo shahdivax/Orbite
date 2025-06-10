@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="12dp">
+
+    <!-- Header with habit name and emoji -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/habit_emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📈"
+            android:textSize="18sp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/habit_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Habit Name"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/current_streak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔥 0"
+            android:textColor="#FF6B6B"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Mini grid for last 14 days - 2 rows -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="8dp">
+
+        <!-- First row - 7 days -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="2dp">
+
+            <View android:id="@+id/grid_day_0" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_1" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_2" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_3" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_4" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_5" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_6" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+
+        </LinearLayout>
+
+        <!-- Second row - 7 days -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <View android:id="@+id/grid_day_7" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_8" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_9" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_10" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_11" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_12" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+            <View android:id="@+id/grid_day_13" android:layout_width="10dp" android:layout_height="10dp" android:layout_margin="1dp" android:background="@drawable/grid_square" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Stats row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: "
+            android:textColor="#AAAAAA"
+            android:textSize="9sp" />
+
+        <TextView
+            android:id="@+id/total_completions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textSize="9sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" • Today: "
+            android:textColor="#AAAAAA"
+            android:textSize="9sp"
+            android:layout_marginStart="8dp" />
+
+        <TextView
+            android:id="@+id/completed_today"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✅"
+            android:textSize="9sp" />
+
+    </LinearLayout>
+
+</LinearLayout> 
